@@ -2,7 +2,8 @@ import { MetadataRoute } from 'next';
 import { createClient } from '@/lib/supabase/server';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://domain-anda.com';
+  const rawBaseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://direktori-umkm-pwwc.vercel.app';
+  const baseUrl = rawBaseUrl.startsWith('http') ? rawBaseUrl : `https://${rawBaseUrl}`;
   const supabase = await createClient();
 
   const { data: listings } = await supabase.from('listings').select('slug, created_at');
