@@ -2,13 +2,13 @@ export interface Category {
   id: string;
   name: string;
   slug: string;
-  created_at: string;
+  created_at?: string;
 }
 
 export interface Listing {
   id: string;
-  user_id: string;
-  category_id: string;
+  user_id?: string;
+  category_id?: string;
   title: string;
   slug: string;
   description: string;
@@ -21,9 +21,9 @@ export interface Listing {
   is_featured: boolean;
   created_at: string;
   category?: Category;
+  categories?: Category;
 }
 
-// src/types/database.ts
 export interface FilterParams {
   q?: string;
   category?: string;

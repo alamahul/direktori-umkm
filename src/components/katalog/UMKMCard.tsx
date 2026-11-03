@@ -9,7 +9,8 @@ interface UMKMCardProps {
 
 export default function UMKMCard({ listing }: UMKMCardProps) {
   // Format nomor WhatsApp
-  const waUrl = `https://wa.me/${listing.phone_number.replace(/^0/, '62')}?text=Halo%20${encodeURIComponent(listing.title)},%20saya%20menemukan%20usaha%20Anda%20di%20Katalog%20UMKM.`;
+  const phone = listing.phone_number ? listing.phone_number.replace(/^0/, '62').replace(/\D/g, '') : '';
+  const waUrl = `https://wa.me/${phone}?text=Halo%20${encodeURIComponent(listing.title)},%20saya%20menemukan%20usaha%20Anda%20di%20Katalog%20UMKM.`;
 
   return (
     <div className="group bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition duration-200 overflow-hidden flex flex-col justify-between">
@@ -17,7 +18,7 @@ export default function UMKMCard({ listing }: UMKMCardProps) {
         {/* Aspect ratio image wrapper */}
         <div className="relative aspect-video w-full bg-gray-100 overflow-hidden">
           <Image
-            src={listing.images?.[0] || '/placeholder-umkm.jpg'}
+            src={listing.images?.[0] || '/placeholder-umkm.svg'}
             alt={listing.title}
             fill
             className="object-cover group-hover:scale-105 transition duration-300"
@@ -40,7 +41,9 @@ export default function UMKMCard({ listing }: UMKMCardProps) {
               {listing.title}
             </Link>
             {listing.is_verified && (
-              <BadgeCheck className="w-5 h-5 text-blue-500 shrink-0" title="Terverifikasi" />
+              <span title="Terverifikasi" className="inline-flex items-center">
+                <BadgeCheck className="w-5 h-5 text-blue-500 shrink-0" />
+              </span>
             )}
           </div>
 
@@ -55,15 +58,17 @@ export default function UMKMCard({ listing }: UMKMCardProps) {
           <span className="truncate max-w-[120px]">{listing.district || 'Garut'}</span>
         </div>
 
-        <a
-          href={waUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-medium rounded-lg transition"
-        >
-          <Phone className="w-3.5 h-3.5" />
-          Hubungi
-        </a>
+        {phone && (
+          <a
+            href={waUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-medium rounded-lg transition"
+          >
+            <Phone className="w-3.5 h-3.5" />
+            Hubungi
+          </a>
+        )}
       </div>
     </div>
   );

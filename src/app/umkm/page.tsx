@@ -1,7 +1,15 @@
+import { Metadata } from 'next';
 import { createClient } from '@/lib/supabase/server';
 import FilterBar from '@/components/katalog/FilterBar';
 import UMKMCard from '@/components/katalog/UMKMCard';
 import { Listing } from '@/types/database';
+
+export const instant = false;
+
+export const metadata: Metadata = {
+  title: 'Katalog UMKM & Jasa Lokal',
+  description: 'Temukan produk dan layanan terbaik dari pelaku usaha lokal.',
+};
 
 interface PageProps {
   searchParams: Promise<{
@@ -10,8 +18,6 @@ interface PageProps {
     district?: string;
   }>;
 }
-
-export const revalidate = 60; // Incremental Static Regeneration (ISR) tiap 60 detik
 
 export default async function KatalogPage({ searchParams }: PageProps) {
   const params = await searchParams;
@@ -23,10 +29,10 @@ export default async function KatalogPage({ searchParams }: PageProps) {
     .select('name, slug')
     .order('name');
 
-  // Query Data Listing UMKM dengan Filter Dynamic
+  // Query Data Listing UMKM
   let query = supabase
     .from('listings')
-    .select('*, category:categories(name, slug)')
+    .select('*, category:categories!category_id(name, slug)')
     .order('is_featured', { ascending: false })
     .order('created_at', { ascending: false });
 
@@ -34,18 +40,38 @@ export default async function KatalogPage({ searchParams }: PageProps) {
     query = query.or(`title.ilike.%${params.q}%,description.ilike.%${params.q}%`);
   }
 
-  if (params.category) {
-    query = query.eq('category.slug', params.category);
-  }
-
   if (params.district) {
     query = query.eq('district', params.district);
   }
 
-  const { data: listings } = await query;
+  const { data: rawListings, error } = await query;
 
-  // List Kecamatan Dummy/Statis untuk Garut (Dapat disesuaikan)
-  const districts = ['Garut Kota', 'Tarogong Kaler', 'Tarogong Kidul', 'Cikajang', 'Wanaraja', 'Leles'];
+  if (error) {
+    console.error('Supabase Query Error:', error);
+  }
+
+  let listings: Listing[] = (rawListings as unknown as Listing[]) || [];
+
+  if (params.category && listings.length > 0) {
+    listings = listings.filter(
+      (item) => item.category?.slug === params.category || item.categories?.slug === params.category
+    );
+  }
+
+  const districts = [
+    'Garut Kota',
+    'Tarogong Kaler',
+    'Tarogong Kidul',
+    'Cikajang',
+    'Wanaraja',
+    'Kadungora',
+    'Samarang',
+    'Selaawi',
+    'Cisurupan',
+    'Cisewu',
+    'Cibiuk',
+    'Bayongbong',
+  ];
 
   return (
     <main className="max-w-7xl mx-auto px-4 py-8">
@@ -54,19 +80,18 @@ export default async function KatalogPage({ searchParams }: PageProps) {
         <p className="text-sm text-gray-500">Temukan produk dan layanan terbaik dari pelaku usaha lokal.</p>
       </div>
 
-      {/* Filter & Search Section */}
       <FilterBar categories={categories || []} districts={districts} />
 
-      {/* Result Grid */}
       {listings && listings.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {listings.map((item: Listing) => (
+          {listings.map((item) => (
             <UMKMCard key={item.id} listing={item} />
           ))}
         </div>
       ) : (
-        <div className="text-center py-16 bg-gray-50 rounded-xl border border-dashed border-gray-200">
-          <p className="text-gray-500 font-medium text-sm">Tidak ada UMKM yang sesuai dengan kriteria pencarian Anda.</p>
+        <div className="text-center py-16 bg-gray-50 rounded-xl border border-dashed border-gray-200 space-y-2">
+          <p className="text-gray-600 font-medium text-sm">Data UMKM belum ditemukan atau tabel di Supabase masih kosong.</p>
+          <p className="text-xs text-gray-400">Pastikan Script Seed SQL sudah dijalankan di Supabase Editor atau tambahkan usaha baru.</p>
         </div>
       )}
     </main>

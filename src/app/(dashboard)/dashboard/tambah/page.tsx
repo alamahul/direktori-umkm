@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 
+export const instant = false;
+
 export default async function TambahUMKMPage() {
   const supabase = await createClient();
   const { data: categories } = await supabase.from('categories').select('*').order('name');

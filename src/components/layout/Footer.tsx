@@ -1,15 +1,6 @@
-'use client';
-
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
 export default function Footer() {
-  const [year, setYear] = useState<number | null>(null);
-
-  useEffect(() => {
-    setYear(new Date().getFullYear());
-  }, []);
-
   return (
     <footer className="bg-gray-900 text-gray-400 text-sm py-12 mt-16 border-t border-gray-800">
       <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -38,7 +29,7 @@ export default function Footer() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 pt-8 mt-8 border-t border-gray-800 text-center text-xs text-gray-500">
-        &copy; {year ?? '2026'} Direktori UMKM. All rights reserved.
+        &copy; 2026 Direktori UMKM. All rights reserved.
       </div>
     </footer>
   );

@@ -6,7 +6,7 @@ export default function PrivacyPolicyPage() {
   return (
     <main className="max-w-4xl mx-auto px-4 py-10 prose prose-slate">
       <h1 className="text-3xl font-bold mb-6">Kebijakan Privasi</h1>
-      <p className="text-gray-600">Terakhir diperbarui: {new Date().toLocaleDateString('id-ID')}</p>
+      <p className="text-gray-600">Terakhir diperbarui: 3 November 2026</p>
       
       <p>
         Katalog UMKM berkomitmen untuk melindungi privasi pengguna kami. Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi informasi pribadi Anda.
